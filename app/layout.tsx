@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Raleway } from "next/font/google";
+import { Poppins, Raleway } from "next/font/google";
 import "./globals.css";
-import MainContext from "./(components)/mainContext";
+import MainContext from "./(components)/MainContext";
 
-const font = Raleway({ subsets: ["latin"], weight: ["300", "500", "700"] });
+const font = Poppins({ subsets: ["latin"], weight: ["300", "500", "700"] });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -15,11 +15,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <html lang="en">
       <MainContext>
-        <body className={`${font.className} antialiased`}>{children}</body>
+        <body className={`${font.className} antialiased`}>
+          {children}
+        </body>
       </MainContext>
     </html>
   );

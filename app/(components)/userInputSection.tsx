@@ -1,36 +1,75 @@
 "use client";
 import { useContext } from "react";
-import { GeneralContext } from "./mainContext";
+import { GeneralContext } from "./MainContext";
 import { AnalyzeSentimentResponse } from "../types";
+import TextArea from "./TextArea";
+
+const BUTTON_TEXT = {
+  WAITING_FOR_INPUT: "Analyse",
+  LOADING: "Loading...",
+  DISPLAY_RESULTS: "Back",
+};
 
 export default function InputSection() {
-  const {setSentimentAnalysis} = useContext(GeneralContext);
+  const {
+    status,
+    lastProcessedText,
+    setLastProcessedText,
+    setStatus,
+    inputText: text,
+    setSentimentAnalysis,
+  } = useContext(GeneralContext);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    // Prevent the default form submission behavior
-    event.preventDefault(); 
-
+  const fetchSentimentData = async () => {
+    setStatus("LOADING");
     try {
-      const response = await fetch("./api/sentiment");
+      const response = await fetch("./api/sentiment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+
       if (!response.ok) throw new Error("Failed to fetch sentiment data");
 
-      const data = await response.json() as AnalyzeSentimentResponse;
-      setSentimentAnalysis(data);   
+      const data = (await response.json()) as AnalyzeSentimentResponse;
+      setSentimentAnalysis(data);
+      setLastProcessedText(text);
+      setStatus("DISPLAY_RESULTS");
     } catch (error) {
       console.error("Error fetching sentiment data:", error);
+      setStatus("WAITING_FOR_INPUT");
     }
   };
 
+  const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (status === "DISPLAY_RESULTS") {
+      setStatus("WAITING_FOR_INPUT");
+    } else if (text === lastProcessedText) {
+      setStatus("DISPLAY_RESULTS");
+    } else {
+      fetchSentimentData();
+    }
+  };
+
+  const getButtonClassName = () => 
+    `${status !== "LOADING" ? "cursor-pointer" : ""} ${
+      status === "DISPLAY_RESULTS" ? "border-transparent hover:bg-foreground-tint" : ""
+    } rounded-lg text-xl py-2 mx-auto px-4 flex-shrink-0 border-2`;
+
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-8">
-      <textarea
-        className="w-full border-2 rounded-lg p-4 text-lg resize-none h-auto overflow-hidden"
-        placeholder="Enter your text here..."
-        rows={1}
-      />
+    <form
+      onSubmit={handleFormSubmit}
+      className={`absolute pb-4 left-0 ${status === "DISPLAY_RESULTS" ? "top-0" : "top-1/2 -translate-y-1/2"} transition-all duration-1000 w-full h-full flex flex-col justify-center`}
+    >
+      <TextArea />
+
       <input
         type="submit"
-        className="border-2 rounded-lg text-xl py-2 mx-auto px-4 cursor-pointer"
+        value={BUTTON_TEXT[status]}
+        disabled={status === "LOADING"}
+        className={getButtonClassName()}
       />
     </form>
   );

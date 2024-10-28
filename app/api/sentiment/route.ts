@@ -1,13 +1,28 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+export async function POST(request : NextRequest) {
   const url = 'https://language.googleapis.com/v2/documents:analyzeSentiment';
   const apiKey = process.env.API_KEY; // Replace with your actual API key
+
+  const CHARACTER_LIMIT = 1000;
+
+  const data = await request.json();
+  
+  if (data.text === undefined) {
+    console.error('Error during sentiment analysis:', "Empty text feild.");
+    return NextResponse.json({ error: "Empty text feild." }, { status: 400 });
+
+  }
+
+  if(data.text.length > CHARACTER_LIMIT) {
+    console.error('Error during sentiment analysis:', `Character limit exceeded. (${CHARACTER_LIMIT})`);
+    return NextResponse.json({ error: `Character limit exceeded. (${CHARACTER_LIMIT})` }, { status: 400 });
+  }
 
   const requestBody = {
     document: {
       type: 'PLAIN_TEXT',
-      content: 'I love coding in TypeScript!',
+      content: data.text, 
     },
     encodingType: 'UTF8',
   };
