@@ -1,13 +1,9 @@
 "use client";
 
-import { createContext, useState, ReactNode, Dispatch, SetStateAction } from "react";
+// This file is just to keep code in page.tsx clearer.
 
-interface GeneralContextType {
-  inputText: string | null;
-  sentimentAnalysis: string | null;
-  setInputText: Dispatch<SetStateAction<string | null>>;
-  setSentimentAnalysis: Dispatch<SetStateAction<string | null>>;
-}
+import { createContext, useState, ReactNode } from "react";
+import { AnalyzeSentimentResponse, GeneralContextType } from "../types";
 
 export const GeneralContext = createContext<GeneralContextType>({
   inputText: null,
@@ -18,7 +14,7 @@ export const GeneralContext = createContext<GeneralContextType>({
 
 export default function MainContext({ children }: { children: ReactNode }) {
   const [inputText, setInputText] = useState<string | null>(null);
-  const [sentimentAnalysis, setSentimentAnalysis] = useState<string | null>(null);
+  const [sentimentAnalysis, setSentimentAnalysis] = useState<AnalyzeSentimentResponse | null>(null);
 
   return (
     <GeneralContext.Provider

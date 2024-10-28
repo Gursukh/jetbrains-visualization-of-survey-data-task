@@ -1,6 +1,7 @@
 "use client";
 import { useContext } from "react";
 import { GeneralContext } from "./mainContext";
+import { AnalyzeSentimentResponse } from "../types";
 
 export default function InputSection() {
   const {setSentimentAnalysis} = useContext(GeneralContext);
@@ -13,8 +14,7 @@ export default function InputSection() {
       const response = await fetch("./api/sentiment");
       if (!response.ok) throw new Error("Failed to fetch sentiment data");
 
-      const data = await response.json();
-      console.log("Sentiment data:", data);
+      const data = await response.json() as AnalyzeSentimentResponse;
       setSentimentAnalysis(data);   
     } catch (error) {
       console.error("Error fetching sentiment data:", error);
