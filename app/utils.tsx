@@ -1,61 +1,57 @@
 import HoverableText from "./(components)/HoverableText";
 import { AnalyzeSentimentResponse } from "./types";
 
+// Utility function to ensure a value is within a specified range
+function clamp(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value));
+}
+
+// Converts sentiment score and opacity to an RGBA color code
 export function colorWithOpacity(value: number, opacity: number): string {
-  value = Math.max(-1, Math.min(1, value));
-  opacity = Math.max(0, Math.min(1, opacity));
+  value = clamp(value, -1, 1);
+  opacity = clamp(opacity, 0, 1);
 
-  let r: number, g: number;
-  if (value < 0) {
-    r = 255;
-    g = Math.round(255 * (1 + value));
-  } else {
-    r = Math.round(255 * (1 - value));
-    g = 255;
-  }
-
+  const r = value < 0 ? 255 : Math.round(255 * (1 - value));
+  const g = value < 0 ? Math.round(255 * (1 + value)) : 255;
   const b = 0;
   const a = Math.round(opacity * 100) + 100;
 
-  const hex = (n: number) => n.toString(16).padStart(2, "0");
+  const toHex = (n: number) => n.toString(16).padStart(2, "0");
 
-  return `#${hex(r)}${hex(g)}${hex(b)}${hex(a)}`;
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}${toHex(a)}`;
 }
 
-export function getSentiment(value: number) {
-  if (value > 0.15) {
-    return "Positive";
-  } else if (value < -0.15) {
-    return "Negative";
-  } else {
-    return "Neutral";
-  }
+// Determines sentiment based on score
+export function getSentiment(value: number): string {
+  if (value > 0.15) return "Positive";
+  if (value < -0.15) return "Negative";
+  return "Neutral";
 }
 
+// Formats text with sentiment analysis data, applying colors and tooltips
 export function formatText(
   text: string,
   sentimentData: AnalyzeSentimentResponse | null
 ) {
-  if (sentimentData == null) return;
+  if (!sentimentData) return null;
 
   const result = [];
   let currentIndex = 0;
 
   sentimentData.sentences.forEach((sentence) => {
-    const { content } = sentence.text;
+    const { content, beginOffset } = sentence.text;
     const { score, magnitude } = sentence.sentiment;
     const color = colorWithOpacity(score, 1);
-    const sentenceStart = sentence.text.beginOffset;
 
-    // Add any text between the current index and the sentence start
-    if (currentIndex < sentenceStart) {
-      result.push(text.slice(currentIndex, sentenceStart));
+    // Add non-sentiment text between sentences
+    if (currentIndex < beginOffset) {
+      result.push(text.slice(currentIndex, beginOffset));
     }
 
-    // Add the colored sentence with tooltip
+    // Add sentiment-colored text with tooltip
     result.push(
       <HoverableText
-        key={sentenceStart}
+        key={beginOffset}
         text={content}
         score={score}
         magnitude={magnitude}
@@ -63,14 +59,13 @@ export function formatText(
       />
     );
 
-    // Update current index to end of the current sentence
-    currentIndex = sentenceStart + content.length;
+    currentIndex = beginOffset + content.length;
   });
 
-  // Append remaining text if any
+  // Add remaining text if any
   if (currentIndex < text.length) {
     result.push(
-      <span key={currentIndex} className="text-foreground ">
+      <span key={currentIndex} className="text-foreground">
         {text.slice(currentIndex)}
       </span>
     );

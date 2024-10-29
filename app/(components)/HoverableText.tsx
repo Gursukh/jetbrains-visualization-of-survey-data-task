@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from "react";
+import React, { useContext, useRef, useCallback } from "react";
 import { GeneralContext } from "./MainContext";
 
 interface HoverableTextProps {
@@ -17,17 +17,19 @@ export default function HoverableText({
   const { showTooltip, hideTooltip } = useContext(GeneralContext);
   const textRef = useRef<HTMLSpanElement>(null);
 
-  const handleMouseEnter = () => {
+  const handleMouseEnter = useCallback(() => {
     if (textRef.current) {
-      const rect = textRef.current.getBoundingClientRect();
+      const { top, left, width } = textRef.current.getBoundingClientRect();
       showTooltip(`Score: ${score}, Magnitude: ${magnitude}`, {
-        top: rect.top,
-        left: rect.left + rect.width / 2,
+        top,
+        left: left + width / 2,
       });
     }
-  };
+  }, [showTooltip, score, magnitude]);
 
-  const handleMouseLeave = () => hideTooltip();
+  const handleMouseLeave = useCallback(() => {
+    hideTooltip();
+  }, [hideTooltip]);
 
   return (
     <span

@@ -1,5 +1,5 @@
 "use client";
-import { useContext, useState } from "react";
+import { useContext, useState, useCallback } from "react";
 import { GeneralContext } from "./MainContext";
 import { AnalyzeSentimentResponse } from "../types";
 import TextArea from "./TextArea";
@@ -8,7 +8,9 @@ const BUTTON_TEXT = {
   WAITING_FOR_INPUT: "Check",
   LOADING: "Loading...",
   DISPLAY_RESULTS: "Back",
-};
+} as const;
+
+type StatusType = keyof typeof BUTTON_TEXT;
 
 export default function InputSection() {
   const {
@@ -22,69 +24,84 @@ export default function InputSection() {
 
   const [error, setError] = useState<string | null>(null);
 
-  const fetchSentimentData = async () => {
+  const fetchSentimentData = useCallback(async () => {
+    setStatus("LOADING");
     try {
-      setStatus("LOADING");
-      const response = await fetch("./api/sentiment", {
+      const response = await fetch("/api/sentiment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text }),
       });
 
-      if (!response.ok) throw new Error((await response.json()).error);
+      const result = await response.json();
 
-      const data = (await response.json()) as AnalyzeSentimentResponse;
+      if (!response.ok) {
+        throw new Error(typeof result.error == 'string' ? result.error : "An unexpected error occurred.");
+      }
+
+      const data = result as AnalyzeSentimentResponse;
       setSentimentAnalysis(data);
       setLastProcessedText(text);
       setStatus("DISPLAY_RESULTS");
       setError(null);
-    } catch (error: unknown) {
-      setError(error as string);
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error ? err.message : "An unexpected error occurred.";
+      setError(errorMessage);
       setStatus("WAITING_FOR_INPUT");
     }
-  };
+  }, [
+    setStatus,
+    text,
+    setSentimentAnalysis,
+    setLastProcessedText,
+  ]);
 
   const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (status === "DISPLAY_RESULTS") {
       setStatus("WAITING_FOR_INPUT");
-    } else if (text === lastProcessedText && text != null) {
+    } else if (text && text === lastProcessedText) {
       setStatus("DISPLAY_RESULTS");
     } else {
       fetchSentimentData();
     }
   };
 
-  const getButtonClassName = () =>
-    `${status !== "LOADING" ? "cursor-pointer" : ""} ${
-      status === "DISPLAY_RESULTS" ? "!border-1 hover:bg-foreground-tint" : ""
-    } rounded-lg text-xl py-2 mx-auto w-[10rem] px-4 flex-shrink-0 border-2 my-8`;
+  const getButtonClassName = () => {
+    const baseClasses =
+      "rounded-lg text-xl py-2 mx-auto w-40 px-4 flex-shrink-0 border-2 my-8 transition-colors duration-300";
+
+    const statusClasses: Record<StatusType, string> = {
+      WAITING_FOR_INPUT: "cursor-pointer",
+      LOADING: "",
+      DISPLAY_RESULTS: "!border-1 hover:bg-foreground-tint cursor-pointer",
+    };
+
+    return `${baseClasses} ${statusClasses[status as StatusType]}`;
+  };
 
   return (
     <form
       onSubmit={handleFormSubmit}
-      className={`${
-        status === "DISPLAY_RESULTS" ? "" : ""
-      } transition-all duration-1000 w-full h-full flex flex-col justify-center py-5`}
+      className="transition-all duration-1000 w-full h-full flex flex-col justify-center py-5"
     >
       <TextArea />
 
-      <input
+      <button
         type="submit"
-        value={BUTTON_TEXT[status]}
         disabled={status === "LOADING"}
         className={getButtonClassName()}
-      />
-
-      <p
-        className="absolute pointer-events-none bottom-[10%] left-1/2 -translate-x-1/2 border-red-500 border-2 text-center mx-auto px-4 transition-all duration-300 mt-4 w-auto whitespace-nowrap text-red-500 rounded-full"
-        style={{
-          opacity: error && status == "WAITING_FOR_INPUT" ? "100%" : "0%",
-        }}
       >
-        {`${error}`}
-      </p>
+        {BUTTON_TEXT[status as StatusType]}
+      </button>
+
+      {error && status === "WAITING_FOR_INPUT" && (
+        <p className="absolute bottom-10 left-1/2 transform -translate-x-1/2 border-red-500 border-2 text-center px-4 transition-opacity duration-300 mt-4 w-auto whitespace-nowrap text-red-500 rounded-full pointer-events-none">
+          {"Error: " + error}
+        </p>
+      )}
     </form>
   );
 }

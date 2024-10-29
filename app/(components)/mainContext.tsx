@@ -1,11 +1,7 @@
 "use client";
 
-import { createContext, useState, ReactNode } from "react";
-import {
-  AnalyzeSentimentResponse,
-  APP_STATUS,
-  GeneralContextType,
-} from "../types";
+import { createContext, useState, ReactNode, useCallback } from "react";
+import { AnalyzeSentimentResponse, APP_STATUS, GeneralContextType } from "../types";
 
 export const GeneralContext = createContext<GeneralContextType>({
   status: "WAITING_FOR_INPUT",
@@ -25,37 +21,32 @@ export default function MainContext({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<APP_STATUS>("WAITING_FOR_INPUT");
   const [inputText, setInputText] = useState<string | null>(null);
   const [lastProcessedText, setLastProcessedText] = useState<string | null>(null);
-  const [sentimentAnalysis, setSentimentAnalysis] =
-    useState<AnalyzeSentimentResponse | null>(null);
+  const [sentimentAnalysis, setSentimentAnalysis] = useState<AnalyzeSentimentResponse | null>(null);
   const [tooltip, setTooltip] = useState({
     isVisible: false,
     content: "",
     position: { top: 0, left: 0 },
   });
 
-  const showTooltip = (content: string, position: { top: number; left: number }) => {
+  const showTooltip = useCallback((content: string, position: { top: number; left: number }) => {
     setTooltip({ isVisible: true, content, position });
+  }, []);
+
+  const hideTooltip = useCallback(() => setTooltip((tooltip) => ({ ...tooltip, isVisible: false })), []);
+
+  const contextValue = {
+    status,
+    inputText,
+    lastProcessedText,
+    sentimentAnalysis,
+    tooltip,
+    setStatus,
+    setInputText,
+    setLastProcessedText,
+    setSentimentAnalysis,
+    showTooltip,
+    hideTooltip,
   };
 
-  const hideTooltip = () => setTooltip({ ...tooltip, isVisible: false });
-
-  return (
-    <GeneralContext.Provider
-      value={{
-        status,
-        inputText,
-        lastProcessedText,
-        sentimentAnalysis,
-        tooltip,
-        setStatus,
-        setInputText,
-        setLastProcessedText,
-        setSentimentAnalysis,
-        showTooltip,
-        hideTooltip,
-      }}
-    >
-      {children}
-    </GeneralContext.Provider>
-  );
+  return <GeneralContext.Provider value={contextValue}>{children}</GeneralContext.Provider>;
 }

@@ -30,6 +30,7 @@ export async function POST(request: NextRequest) {
     document: {
       type: "PLAIN_TEXT",
       content: data.text,
+      languageCode: "en",
     },
     encodingType: "UTF8",
   };
@@ -53,7 +54,6 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await response.json();
-    console.log("Sentiment Analysis Response:", data);
     return NextResponse.json(data);
   } catch (error) {
     console.error("Error during sentiment analysis:", error);

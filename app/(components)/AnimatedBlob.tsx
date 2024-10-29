@@ -1,22 +1,37 @@
+import React from "react";
+
 interface AnimatedBackgroundBlobProps {
   position: "left" | "right";
   topPosition: string;
   color: string;
   size: string;
   blur: string;
-};
+}
 
-export function AnimatedBackgroundBlob({ position, topPosition, color, size, blur }: AnimatedBackgroundBlobProps) {
+/*
+  These are the colored spots in the backgroun
+*/
+
+export function AnimatedBackgroundBlob({
+  position,
+  topPosition,
+  color,
+  size,
+  blur,
+}: AnimatedBackgroundBlobProps) {
   return (
     <div
+      className={`
+        absolute 
+        rounded-full
+        transition-all
+        duration-[2000ms]
+      `}
       style={{
-        position: "absolute",
-        [position]: "0",
         top: topPosition,
-        transition: "all 2000ms",
-        borderRadius: "9999px", // rounded-full
         backgroundColor: color,
         width: size,
+        [position]: "0",
         height: size,
         filter: `blur(${blur})`,
       }}
