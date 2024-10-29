@@ -11,5 +11,5 @@
     </filter>
 
     <!-- <rect width='300' height='300' fill='#0000000'/> -->
-    <rect width='300' height='300' filter="url(#n)" opacity='0.2'/>
+    <rect width='300' height='300' filter="url(#n)" opacity='0.1'/>
 </svg>

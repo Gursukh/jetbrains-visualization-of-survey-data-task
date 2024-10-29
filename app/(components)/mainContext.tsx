@@ -1,7 +1,5 @@
 "use client";
 
-// This file is just to keep code in page.tsx clearer.
-
 import { createContext, useState, ReactNode } from "react";
 import {
   AnalyzeSentimentResponse,
@@ -14,10 +12,13 @@ export const GeneralContext = createContext<GeneralContextType>({
   inputText: null,
   lastProcessedText: null,
   sentimentAnalysis: null,
+  tooltip: { isVisible: false, content: "", position: { top: 0, left: 0 } },
   setStatus: () => {},
   setInputText: () => {},
   setLastProcessedText: () => {},
   setSentimentAnalysis: () => {},
+  showTooltip: () => {},
+  hideTooltip: () => {},
 });
 
 export default function MainContext({ children }: { children: ReactNode }) {
@@ -26,6 +27,17 @@ export default function MainContext({ children }: { children: ReactNode }) {
   const [lastProcessedText, setLastProcessedText] = useState<string | null>(null);
   const [sentimentAnalysis, setSentimentAnalysis] =
     useState<AnalyzeSentimentResponse | null>(null);
+  const [tooltip, setTooltip] = useState({
+    isVisible: false,
+    content: "",
+    position: { top: 0, left: 0 },
+  });
+
+  const showTooltip = (content: string, position: { top: number; left: number }) => {
+    setTooltip({ isVisible: true, content, position });
+  };
+
+  const hideTooltip = () => setTooltip({ ...tooltip, isVisible: false });
 
   return (
     <GeneralContext.Provider
@@ -34,10 +46,13 @@ export default function MainContext({ children }: { children: ReactNode }) {
         inputText,
         lastProcessedText,
         sentimentAnalysis,
+        tooltip,
         setStatus,
         setInputText,
         setLastProcessedText,
         setSentimentAnalysis,
+        showTooltip,
+        hideTooltip,
       }}
     >
       {children}
