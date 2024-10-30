@@ -1,6 +1,6 @@
 ## How To Run
 
-Using NodeJS
+With NodeJS is installed, git clone the repo.
 
 First, install dependencies
 ```bash
