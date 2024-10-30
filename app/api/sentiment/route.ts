@@ -11,8 +11,8 @@ export async function POST(request: NextRequest) {
   const data = await request.json();
 
   if (data.text === undefined || data.text === null || isWhitespaceString(data.text)) {
-    console.error("Error during sentiment analysis:", "Empty text feild.");
-    return NextResponse.json({ error: "Empty text feild." }, { status: 400 });
+    console.error("Error during sentiment analysis:", "Empty text field.");
+    return NextResponse.json({ error: "Empty text field." }, { status: 400 });
   }
 
   if (data.text.length > CHARACTER_LIMIT) {

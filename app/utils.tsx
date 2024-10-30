@@ -35,8 +35,8 @@ export function formatText(
 ) {
   if (!sentimentData) return null;
 
-  const result = [];
-  let currentIndex = 0;
+  const result: (string | JSX.Element)[] = [];
+  let currentIndex: number = 0;
 
   sentimentData.sentences.forEach((sentence) => {
     const { content, beginOffset } = sentence.text;
@@ -45,7 +45,10 @@ export function formatText(
 
     // Add non-sentiment text between sentences
     if (currentIndex < beginOffset) {
-      result.push(text.slice(currentIndex, beginOffset));
+      const whitespace = text
+        .slice(currentIndex, beginOffset)
+        .replace(/\S/g, "");
+      result.push(whitespace);
     }
 
     // Add sentiment-colored text with tooltip

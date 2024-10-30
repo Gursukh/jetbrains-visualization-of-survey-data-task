@@ -21,7 +21,7 @@ function Tooltip({ tooltip }: TooltipProps) {
         left: position.left,
         transform: "translate(-50%, -150%)",
       }}
-      className="bg-black text-white px-2 py-1 rounded text-xs whitespace-nowrap z-50"
+      className="bg-black text-white px-2 py-1 rounded text-xs whitespace-nowrap z-50 font-light"
     >
       {content}
     </div>
