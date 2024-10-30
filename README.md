@@ -1,21 +1,25 @@
-## How To Run
+# How To Run
 
-With NodeJS is installed, git clone the repo.
+Using NodeJS
 
-First, install dependencies
+### First, install dependencies
 ```bash
 npm i
 ```
 
-Next, create a `.env` in the root of this project and add a GCP API Key with access to [https://console.cloud.google.com/marketplace/product/google/language.googleapis.com](Natural Language processing).
+### Next, create a `.env` in the root of this project
+Add a GCP API Key with access to Natural Language processing. https://console.cloud.google.com/marketplace/product/google/language.googleapis.com
 ```bash
 API_KEY=YOUR-KEY-HERE
 ```
 
-Lastly, run the development server:
+### Lastly, run the development server
 ```bash
 npm run dev
 ```
-If you do not have a key, you can use the deployment on vercel. [https://jetbrains-visualization-of-survey-data-task.vercel.app/](https://jetbrains-visualization-of-survey-data-task.vercel.app/)
+See the page at https://localhost:3000
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+
+### If you do NOT have a key to use.
+If you do not have a key, you can use the deployment on vercel. [https://jetbrains-visualization-of-survey-data-task.vercel.app/](https://jetbrains-visualization-of-survey-data-task.vercel.app/)
