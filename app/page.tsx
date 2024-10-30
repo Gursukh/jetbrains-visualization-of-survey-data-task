@@ -1,6 +1,6 @@
 "use client";
 import { useContext } from "react";
-import { GeneralContext } from "./(components)/MainContext";
+import { GeneralContext } from "./(components)/mainContext";
 import InputSection from "./(components)/UserInputSection";
 import ResultsSection from "./(components)/ResultsSection";
 import { colorWithOpacity } from "./utils";

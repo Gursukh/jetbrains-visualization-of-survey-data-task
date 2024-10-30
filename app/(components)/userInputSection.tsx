@@ -1,6 +1,6 @@
 "use client";
 import { useContext, useState, useCallback } from "react";
-import { GeneralContext } from "./MainContext";
+import { GeneralContext } from "./mainContext";
 import { AnalyzeSentimentResponse } from "../types";
 import TextArea from "./TextArea";
 

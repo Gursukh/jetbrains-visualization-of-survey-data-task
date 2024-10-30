@@ -1,5 +1,5 @@
 import React, { useContext, useRef, useCallback } from "react";
-import { GeneralContext } from "./MainContext";
+import { GeneralContext } from "./mainContext";
 
 interface HoverableTextProps {
   text: string;

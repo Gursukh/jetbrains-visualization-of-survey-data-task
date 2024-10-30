@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { Poppins, Raleway } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
-import MainContext from "./(components)/MainContext";
+import MainContext from "./(components)/mainContext";
 
 const font = Poppins({ subsets: ["latin"], weight: ["300", "500", "700"] });
 

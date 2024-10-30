@@ -1,5 +1,5 @@
 import { useRef, useLayoutEffect, useContext, useState } from "react";
-import { GeneralContext } from "./MainContext";
+import { GeneralContext } from "./mainContext";
 import { formatText } from "../utils";
 
 const MAX_CHARACTER_LENGTH = 1000;

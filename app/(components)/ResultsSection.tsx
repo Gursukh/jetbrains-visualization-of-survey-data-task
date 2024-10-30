@@ -1,5 +1,5 @@
 import { useCallback, useContext } from "react";
-import { GeneralContext } from "./MainContext";
+import { GeneralContext } from "./mainContext";
 import { colorWithOpacity, getSentiment } from "../utils";
 import { SentenceSentiment } from "../types";
 
